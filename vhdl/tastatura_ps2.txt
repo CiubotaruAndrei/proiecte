@@ -1,0 +1,289 @@
+--decodificator
+
+library IEEE;																														 																								 library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity decodificator is
+	port(code:in std_logic_vector(7 downto 0);
+	a_g:out std_logic_vector(6 downto 0));
+end decodificator;
+architecture arh of decodificator is
+begin
+	with code select
+	a_g<="0001000" when X"1C",--a
+	"1001111" when X"16",--1
+	"0010010" when X"1E",--2
+	"0000110" when X"26",--3
+	"1001100" when X"25",--4
+	"0100100" when X"2E",--5
+	"0100000" when X"36",--6
+	"0001111" when X"3D",--7
+	"0000000" when X"3E",--8
+	"0000100" when X"46",--9
+	"0000001" when X"45",--0
+	"0011000" when X"4D",--p
+	"1110001" when X"4B",--l
+	"0110000" when X"24",--e
+	"1000001" when X"3C",--u
+	"1111001" when X"43",--i
+	"0111000" when X"2B",--f
+	"1001000" when X"33",--h
+	"0110001" when X"21",--c
+	"1100000" when X"32",--b
+	"1000011" when X"3B",--j
+	"1100010" when X"44",--o
+	"1000010" when X"23",--d
+	"1111111" when X"FF",
+	"1111110" when others;
+end;
+
+
+
+
+
+
+
+
+
+--registru
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+entity registru is 
+	port(CLOCK,RESET,DATA : in std_logic;
+	IESIRE : out std_logic_vector(10 downto 0));
+end registru;
+architecture arch1 of registru is 
+signal temp : std_logic_vector ( 10 downto 0);
+begin
+	process(CLOCK,RESET)
+	begin
+		if (RESET = '1') then
+      		temp <= "00000000000";
+	  	elsif (CLOCK'event and CLOCK='0') then
+		 	temp <= DATA & temp(10 downto 1);
+	  	end if;
+	 end process;	
+	 IESIRE<=temp;
+	 
+end arch1;
+
+
+-numarator
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.STD_LOGIC_UNSIGNED.all;
+
+entity numarator is
+	port(CLOCK,RESET: in std_logic;
+	DATA : in std_logic_vector(10 downto 0);
+	IESIRE : out std_logic_vector(6 downto 0));
+end numarator;
+architecture arch1 of numarator is
+signal ok1 : std_logic:='0';
+signal temp : std_logic_vector(6 downto 0):="0000000";
+begin
+	process(CLOCK,RESET,temp)
+	begin
+		if data = X"5C0" then
+			ok1<='1';
+		elsif temp = "0110101" then	 --nr pentru o tasta speciala
+			temp<= "0000000";
+			ok1<='0';
+		elsif temp = "0100001" and ok1 = '0' then --nr pentru o tasta normala
+			temp<= "0000000";
+		elsif (CLOCK'event and CLOCK='0') then 
+			temp <= temp + 1;
+		end if;
+		end process;
+	 IESIRE<=temp;
+	 
+end arch1;
+
+
+
+
+--tastatura
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.STD_LOGIC_UNSIGNED.all;
+
+entity proiect is 
+	port(ps2clock : in std_logic;
+	clk:in std_logic;
+	ps2data : in std_logic;
+	anod : out std_logic_vector (3 downto 0);
+	catod : out std_logic_vector (6 downto 0);
+	led:out std_logic_vector(7 downto 0));
+end proiect;
+
+architecture arhi of proiect is 
+signal numarator : std_logic_vector( 6 downto 0);
+signal data : std_logic_vector(10 downto 0);
+signal error: std_logic;
+signal code : std_logic_vector(7 downto 0):=X"FF";
+signal enable: std_logic:='0';
+begin
+	componenta1 : entity work.registru(arch1) port map (ps2clock,'0',ps2data,data);
+    componenta2 : entity work.numarator(arch1) port map (ps2clock,'0',data,numarator);
+	componenta3 : entity work.verificare(arh) port map(data,error);
+	process(error)
+	begin
+		if error='0' and numarator = "0000000" then
+			code<= data(8 downto 1);
+			enable<='1';
+		else 
+			enable<='0';
+		end if;
+	end process;
+	led<=code;
+	componenta4 : entity work.top(arh) port map (code,enable,clk,anod,catod);
+end arhi;
+	
+
+--div
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.std_logic_unsigned.ALL;
+
+entity clkdiv is
+	port(clk50:in std_logic;
+	clk190:out std_logic);	 
+end clkdiv;
+
+architecture arh of clkdiv is
+signal q:std_logic_vector(23 downto 0):=X"000000";
+begin
+	process(clk50)
+	begin
+		if clk50'event and clk50='1' then
+			q<=q+1;
+		end if;
+	end process;
+	clk190<=q(17);
+end;
+
+-display
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.std_logic_unsigned.ALL;
+
+entity x7seg is
+	port(an3,an2,an1,an0:in std_logic_vector(6 downto 0);
+	clk:in std_logic;
+	a_g:out std_logic_vector(6 downto 0);
+	an:out std_logic_vector (3 downto 0));
+end x7seg;
+
+architecture arh of x7seg is
+signal count:std_logic_vector(1 downto 0):="00";
+signal aen:std_logic_vector(3 downto 0);
+signal clkdiv:std_logic;
+begin 
+	--divizor de frecventa
+	--C: entity work.clkdiv(arh) port map(clk,clkdiv);
+		aen<="1111";
+		--numarator
+		process(clk)
+		begin
+			if clk'event and clk='1' then
+				count<=count-1;
+			end if;
+		end process;				  
+		--selectarea codului de afisat
+		with count select
+		a_g<=an3 when "11",
+		an2 when "10",
+		an1 when "01",
+		an0 when others;
+		--selectare anod
+		process(count)
+		begin
+			an<="1111";
+			if(aen(conv_integer(count))='1')then
+				an(conv_integer(count))<='0';
+			end if;
+		end process;
+end architecture arh;
+
+
+--main
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+entity top is
+	port(code:in std_logic_vector(7 downto 0);
+	enable:in std_logic;
+	clk:in std_logic;
+	anod:out std_logic_vector(3 downto 0);
+	catod:out std_logic_vector(6 downto 0));
+end top;
+
+architecture arh of top is
+signal x:std_logic_vector(31 downto 0):=X"FFFFFFFF";
+signal cod0,cod1,cod2,cod3 : std_logic_vector(6 downto 0);
+begin
+	process(code,enable)
+	begin 
+		if enable='1' then
+		if code=X"5A" then
+			x<=X"FFFFFFFF";
+		elsif code=X"74" then
+			if x(31 downto 24)=X"FF" then
+				x(31 downto 24)<=X"00";
+			elsif x(23 downto 16)=X"FF" then
+				x(23 downto 16)<=X"00";
+			elsif x(15 downto 8)=X"FF" then
+				x(15 downto 8)<=X"00";
+			end if;
+		elsif code=X"6B" then
+			if x(7 downto 0)/=X"FF" then
+				X(7 downto 0)<=X"FF";
+			elsif x(15 downto 8)/=X"FF" then
+				x(15 downto 8)<=X"FF";
+			elsif  x(23 downto 16)/=X"FF" then
+				x(23 downto 16)<=X"FF";
+			else
+				x(31 downto 24)<=X"FF";
+			end if;
+		else		
+			if x= X"FFFFFFFF" then
+			  	x(31 downto 24) <= code;
+			elsif x(23 downto 0 ) = X"FFFFFF" then
+				x(23 downto 16)<=code;
+			elsif x(15 downto 0) = X"FFFF" then
+				x(15 downto 8) <= code;
+			elsif x(7 downto 0)= X"FF" then
+				x( 7 downto 0 ) <= code;
+			else
+				x <= x(23 downto 0) & code;
+			end if;
+		end if;
+		end if;
+		end process;
+	D1 : entity work.decodificator(arh) port map(x(31 downto 24),cod3);
+	D2 : entity work.decodificator(arh) port map(x(23 downto 16),cod2);
+	D3 : entity work.decodificator(arh) port map(x(15 downto 8),cod1);
+	D4 : entity work.decodificator(arh) port map(x(7 downto 0),cod0);
+	A: entity work.x7seg(arh) port map(cod3,cod2,cod1,cod0,clk,catod,anod);
+	
+end;
+
+-ver
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+
+entity verificare is
+	port(data:in std_logic_vector(10 downto 0);
+	err:out std_logic);
+end verificare;
+
+architecture arh of verificare is
+begin
+	err<=not(not(data(0))and data(10) and (data(9)xor data(8) xor data(7)xor data(6)xor data(5)xor data(4)xor data(3)xor data(2)xor data(1)));
+end;

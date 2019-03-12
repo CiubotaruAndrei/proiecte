@@ -1,0 +1,14 @@
+Leaving	 22
+Breakfast	 1
+Sleeping 124
+Snack	 0
+Grooming	 1
+Showering	 0
+Spare_Time/TV 103
+Toileting	 0
+Lunch 0
+
+larger than 10:
+Leaving	 22
+Sleeping 124
+Spare_Time/TV 103
