@@ -1,10 +1,9 @@
 package YourTicket.controller;
 
 
-import YourTicket.model.NormalTicket;
-import YourTicket.model.PresaleTicket;
 import YourTicket.model.Ticket;
-import YourTicket.model.Ticketfactory;
+import YourTicket.model.TicketFactory;
+import YourTicket.model.TicketInterface;
 import YourTicket.repository.TicketRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -18,16 +17,31 @@ public class TicketController {
 
     @Autowired
     TicketRepository ticketRepository;
-    Ticketfactory ticketfactory = new Ticketfactory();
+    TicketFactory ticketFactory = new TicketFactory();
 
     @GetMapping("/all")
-    public @ResponseBody List<Ticketfactory> getAllTickets(){
+    public @ResponseBody List<Ticket> finaAll(){
         return ticketRepository.findAll();
     }
 
     @PostMapping("/add")
-    public @ResponseBody Ticketfactory addTicket(@RequestBody Ticketfactory t){
-        return ticketRepository.save(t);
+    public @ResponseBody Ticket add(@RequestBody Ticket ticket){
+        TicketInterface type = ticketFactory.getTicket(ticket.getType());
+        ticket.setDiscount(type.setDiscount());
+        return ticketRepository.save(ticket);
+    }
+
+    @DeleteMapping("/delete/{id_event}/{id_ticket}")
+    public @ResponseBody boolean delete(@PathVariable("id_event") Integer idEvent, @PathVariable("id_ticket") Integer idTicket) {
+        List<Ticket> tickets = this.finaAll();
+        for(Ticket t: tickets)
+            if(t.getIdEvent().equals(idEvent) && t.getIdTicket().equals(idTicket))
+            {
+                ticketRepository.delete(t);
+                return true;
+            }
+
+         return false;
     }
 
 

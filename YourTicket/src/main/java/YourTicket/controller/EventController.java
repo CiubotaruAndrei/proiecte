@@ -57,4 +57,13 @@ public class EventController {
         return false;
     }
 
+    @PutMapping("/update/{id}")
+    public @ResponseBody void update(@PathVariable("id") Integer id, @RequestBody Event event) {
+        Event updateEvent = eventRepository.getOne(id);
+        updateEvent.setLocation(event.getLocation());
+        updateEvent.setDate(event.getDate());
+        updateEvent.setDescription(event.getDescription());
+        eventRepository.save(updateEvent);
+    }
+
 }
