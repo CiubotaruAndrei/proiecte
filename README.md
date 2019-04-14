@@ -1,6 +1,6 @@
 # Proiecte
 
-Proiectele realizate in timpul facultatii m-au ajutat sa inteleg conceptle OOP.
+Proiectele realizate in timpul facultatii m-au ajutat sa inteleg conceptele OOP.
 
 Cele mai importante proicete sunt:
 - Bank management: Aplicatia simuleaza o banca, un client poate avea conturi de doua tipuri si poate efectua depunere si retragere
