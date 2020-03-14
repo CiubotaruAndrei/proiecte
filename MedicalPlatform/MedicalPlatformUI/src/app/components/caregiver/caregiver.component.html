@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Caregiver page</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h2 style="float:left">Patients for caregiver {{caregiver.name}}</h2>
+  <button type="button" class="btn btn-dark" style="float:right" (click)="logOut()" >Logout</button>
+  <br>
+  <br>
+  <table class="table table-striped">
+    <thead class="table-dark">
+      <tr>
+        <th>Name</th>
+        <th>Email</th>
+        <th>Address</th>
+        <th>Gender</th>
+        <th>Birth date</th>
+        <th>Medical record</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor='let patient of patients'>
+        <td>{{patient.name}}</td>
+        <td>{{patient.email}}</td>
+        <td>{{patient.address}}</td>
+        <td>{{patient.gender}}</td>
+        <td>{{patient.birthDate}}</td>
+        <td>{{patient.medicalRecord}}</td>
+        <td>
+            <a data-toggle="collapse" href="#collapse{{patient.id}}" (click)="getRecommendations(patient.id)">Recommendations</a>
+            <div id="collapse{{patient.id}}" class="panel-collapse collapse">
+                <ul *ngFor='let r of rec[patient.id]'>
+                    <li>{{r}}</li>
+                  </ul>  
+            </div>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+  <div *ngFor='let alert of alerts'>
+    {{alert}}
+  </div>
+</div>
+
+</body>
+</html>

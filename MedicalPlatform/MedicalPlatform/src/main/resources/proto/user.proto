@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+option java_package = "grpc";
+
+service User{
+    rpc login(LoginRequest)  returns (LoginResponse);
+    rpc getMed(MedRequest) returns (MedResponse);
+    rpc medTake(TakeMedRequest) returns (Empty);
+    rpc medNotTake(NotTakeMedRequest) returns (Empty);
+}
+
+message LoginRequest{
+    string email = 1 ;
+    string password = 2 ;
+}
+
+message LoginResponse{
+    int32 id = 1;
+    string name = 2;
+}
+
+message MedRequest{
+    int32 id = 1;
+    string time = 2;
+}
+
+message Medication{
+    string name = 1;
+    string dosage = 2;
+    string moments = 3;
+}
+
+message MedResponse{
+    repeated Medication med = 1;
+}
+
+message TakeMedRequest{
+    int32 id = 1;
+    string name = 2;
+    string expectedTime = 3;
+    string actualTime = 4;
+}
+
+message NotTakeMedRequest{
+    repeated TakeMedRequest med =1;
+}
+
+message Empty{}

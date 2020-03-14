@@ -1,0 +1,29 @@
+#chart {
+    height:40vh; 
+    width:40vw;
+    margin-top: 5%;
+    margin-left: 30%;
+    margin-bottom: 15%;
+}
+
+h1{
+    text-align: center;
+}
+
+.form-inline{
+    float: left;
+    width: 50%;
+    margin-top: 5%;
+    margin-left: 10%;
+    margin-bottom: 5%;
+}
+
+#info{
+    color: red;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.container {
+    margin-bottom: 5%;
+}

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Doctor Page</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+  <h2 style="float:left;color:white">Patient</h2>
+  <button type="button" class="btn btn-dark" id="logout" (click)="logOut()">Logout</button>
+  <br>
+  <br>
+  <br>
+  <div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+          <a data-toggle="collapse" href="#collapse1">View patients</a>
+      </div>
+      <div id="collapse1" class="panel-collapse collapse">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Gender</th>
+              <th>Birth Date</th>
+              <th>Address</th>
+              <th>Medical Record</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor='let patient of patients'>
+              <td>{{patient.name}}</td>
+              <td>{{patient.gender}}</td>
+              <td>{{patient.birthDate}}</td>
+              <td>{{patient.address}}</td>
+              <td>{{patient.medicalRecord}}</td>
+              <td>
+                <button type="button" class="btn btn-primary" (click)="getHistory(patient.id)">History</button>
+              </td>
+              <td><button type="button" class="btn btn-danger" (click)="deletePatient(patient.id)">delete</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel-group">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+          <a data-toggle="collapse" href="#collapse2">Add/update patient</a>
+      </div>
+      <div id="collapse2" class="panel-collapse collapse">
+        <form class="form-horizontal">
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="name">Operation:</label>
+            <div class="col-sm-10">
+              <button type="button" class="btn btn-primary" id="info" data-toggle="tooltip" data-placement="bottom" title="To add a patient complete all fields and for update just complete what you want to change">Info</button>
+              <label class="radio-inline">
+                <input type="radio" name="addOp" [checked]="true" value="1" [(ngModel)]="patientOp"  (change)="onItemChange($event)">Add
+              </label>
+              <label class="radio-inline">
+                <input type="radio" name="updateOp" value="2" [(ngModel)]="patientOp" (change)="onItemChange($event)">Update
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="name">Select patient to update:</label>
+            <div class="col-sm-10">
+              <select class="form-control" id="sel" [(ngModel)]="patientUpdate" name="sel">
+                <option *ngFor="let patient of patients" [(ngValue)]="patient.id">{{patient.name}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="name">Name:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="name" placeholder="Enter name" name="name" [(ngModel)]="patient.name">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="email">Email:</label>
+            <div class="col-sm-10">
+              <input type="email" class="form-control" id="email" placeholder="Enter email" name="email" [(ngModel)]="patient.email">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="pwd">Password:</label>
+            <div class="col-sm-10">
+              <input type="password" class="form-control" id="pwd" placeholder="Enter password" name="pwd" [(ngModel)]="patient.password">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="address">Address:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="address" placeholder="Enter address" name="address" [(ngModel)]="patient.address">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2">Gender:</label>
+            <div class="col-sm-10">
+              <label class="radio-inline">
+                <input type="radio" name="male" [checked]="true" value="male" [(ngModel)]="patient.gender"  (change)="onItemChange($event)">Male
+              </label>
+              <label class="radio-inline">
+                <input type="radio" name="female" value="female" [(ngModel)]="patient.gender" (change)="onItemChange($event)">Female
+              </label>
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="date">Birth Date</label>
+            <div class="col-sm-10">
+              <input type="date" class="form-control" id="date" placeholder="Enter birth date" name="date" [(ngModel)]="patient.birthDate">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="record">Medical Record:</label>
+            <div class="col-sm-10">
+              <input type="text" class="form-control" id="record" placeholder="Enter medical record" name="record" [(ngModel)]="patient.medicalRecord">
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="control-label col-sm-2" for="sel">Select caregiver:</label>
+            <div class="col-sm-10">
+            <select class="form-control" id="sel1" [(ngModel)]="caregiverId" name="sel">
+              <option *ngFor="let caregiver of caregivers" [(ngValue)]="caregiver.id">{{caregiver.name}}</option>
+            </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-offset-2 col-sm-10">
+              <button type="submit" class="btn btn-primary" (click)="patientOperation()">Submit</button>
+              <button type="reset" class="btn btn-primary" style="margin-left:15px">Reset</button>
+            </div>
+          </div>
+        </form>
+      </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <h2 style="color:white">Caregiver</h2>
+    <div class="panel-group">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+            <a data-toggle="collapse" href="#collapse3">View caregivers</a>
+        </div>
+        <div id="collapse3" class="panel-collapse collapse">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Gender</th>
+                <th>Birth Date</th>
+                <th>Address</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor='let caregiver of caregivers'>
+                <td>{{caregiver.name}}</td>
+                <td>{{caregiver.gender}}</td>
+                <td>{{caregiver.birthDate}}</td>
+                <td>{{caregiver.address}}</td>
+                <td><button type="button" class="btn btn-danger" (click)="deleteCaregiver(caregiver.id)">delete</button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel-group">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+            <a data-toggle="collapse" href="#collapse4">Add/Update caregiver</a>
+        </div>
+        <div id="collapse4" class="panel-collapse collapse">
+          <form class="form-horizontal">
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="name">Operation:</label>
+              <div class="col-sm-10">
+                <button type="button" class="btn btn-primary" id="info1" data-toggle="tooltip" data-placement="bottom" title="To add a caregiver complete all fields and for update just complete what you want to change">Info</button>
+                <label class="radio-inline">
+                  <input type="radio" name="addOp1" [checked]="true" value="1" [(ngModel)]="caregiverOp"  (change)="onItemChange($event)">Add
+                </label>
+                <label class="radio-inline">
+                  <input type="radio" name="updateOp1" value="2" [(ngModel)]="caregiverOp" (change)="onItemChange($event)">Update
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="sel">Select caregiver to update:</label>
+              <div class="col-sm-10">
+              <select class="form-control" id="sel2" [(ngModel)]="caregiverUpdate" name="sel">
+                <option *ngFor="let caregiver of caregivers" [(ngValue)]="caregiver.id">{{caregiver.name}}</option>
+              </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="name">Name:</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="name1" placeholder="Enter name" name="name" [(ngModel)]="newcaregiver.name">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="email">Email:</label>
+              <div class="col-sm-10">
+                <input type="email" class="form-control" id="email1" placeholder="Enter email" name="email" [(ngModel)]="newcaregiver.email">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="pwd">Password:</label>
+              <div class="col-sm-10">
+                <input type="password" class="form-control" id="pwd1" placeholder="Enter password" name="pwd" [(ngModel)]="newcaregiver.password">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="address">Address:</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="address1" placeholder="Enter address" name="address" [(ngModel)]="newcaregiver.address">
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2">Gender:</label>
+              <div class="col-sm-10">
+                <label class="radio-inline">
+                  <input type="radio" name="male" [checked]="true" value="male" [(ngModel)]="newcaregiver.gender"  (change)="onItemChange($event)">Male
+                </label>
+                <label class="radio-inline">
+                  <input type="radio" name="female" value="female" [(ngModel)]="newcaregiver.gender" (change)="onItemChange($event)">Female
+                </label>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="date">Birth Date</label>
+              <div class="col-sm-10">
+                <input type="date" class="form-control" id="date1" placeholder="Enter birth date" name="date" [(ngModel)]="newcaregiver.birthDate">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-primary" (click)="caregiverOperation()">Submit</button>
+                <button type="reset" class="btn btn-primary" style="margin-left:15px">Reset</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="container">
+      <h2 style="color:white">Medication</h2>
+      <div class="panel-group">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+              <a data-toggle="collapse" href="#collapse5">View medications</a>
+          </div>
+          <div id="collapse5" class="panel-collapse collapse">
+            <table class="table table-striped">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Dosage</th>
+                  <th>Side effects</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor='let medication of medications'>
+                  <td>{{medication.name}}</td>
+                  <td>{{medication.dosage}}</td>
+                  <td>{{medication.sideEffects}}</td>
+                  <td><button type="button" class="btn btn-danger" (click)="deleteMedication(medication.id)">delete</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-group">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+              <a data-toggle="collapse" href="#collapse6">Add/Update medication</a>
+          </div>
+          <div id="collapse6" class="panel-collapse collapse">
+            <form class="form-horizontal">
+              <div class="form-group">
+                <label class="control-label col-sm-2" for="name">Operation:</label>
+                <div class="col-sm-10">
+                  <button type="button" class="btn btn-primary" id="info2" data-toggle="tooltip" data-placement="bottom" title="To add a medication complete all fields and for update just complete what you want to change">Info</button>
+                  <label class="radio-inline">
+                    <input type="radio" name="addOp2" [checked]="true" value="1" [(ngModel)]="medicationOp"  (change)="onItemChange($event)">Add
+                  </label>
+                  <label class="radio-inline">
+                    <input type="radio" name="updateOp2" value="2" [(ngModel)]="medicationOp" (change)="onItemChange($event)">Update
+                  </label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-sm-2" for="name">Select medication to update:</label>
+                <div class="col-sm-10">
+                  <select class="form-control" id="sel3" [(ngModel)]="medicationUpdate" name="sel">
+                    <option *ngFor="let medication of medications" [(ngValue)]="medication.id">{{medication.name}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-sm-2" for="name">Name:</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="name2" placeholder="Enter name" name="name" [(ngModel)]="newmedication.name">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-sm-2" for="dosage">Dosage:</label>
+                <div class="col-sm-10">
+                  <input type="email" class="form-control" id="dosage" placeholder="Enter email" name="dosage" [(ngModel)]="newmedication.dosage">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-sm-2" for="effect">Side effects:</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="effect" placeholder="Enter address" name="effects" [(ngModel)]="newmedication.sideEffects">
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button type="submit" class="btn btn-primary" (click)="medicationOperation()">Submit</button>
+                  <button type="reset" class="btn btn-primary" style="margin-left:15px">Reset</button>
+                </div>
+              </div>
+            </form>
+          </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="container">
+        <h2 style="color:white">Medication Plan   <button type="button" class="btn btn-primary" id="info3" data-toggle="tooltip" data-placement="bottom" title="First add a prescription then add medications for that prescription">Info</button></h2>
+        <div class="panel-group">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+                <a data-toggle="collapse" href="#collapse7">Add prescription</a>
+            </div>
+            <div id="collapse7" class="panel-collapse collapse">
+            <form class="form-horizontal">
+              <div class="form-group">
+                <label label class="control-label col-sm-2" for="pname">Patient:</label>
+                <div class="col-sm-10">
+                  <select class="form-control" id="sel4" [(ngModel)]="patientPlan" name="sel">
+                    <option *ngFor="let patient of patients" [(ngValue)]="patient.id">{{patient.name}}</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-sm-2" for="date">Start Date</label>
+                <div class="col-sm-10">
+                  <input type="date" class="form-control" id="date2" placeholder="Enter start date" name="date" [(ngModel)]="medicationplan.start">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-sm-2" for="date">End Date</label>
+                <div class="col-sm-10">
+                  <input type="date" class="form-control" id="date3" placeholder="Enter end date" name="date" [(ngModel)]="medicationplan.end">
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button type="submit" class="btn btn-primary" (click)="addMedicationPlan()">Submit</button>
+                  <button type="reset" class="btn btn-primary" style="margin-left:15px">Reset</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="container">
+      <div class="panel-group">
+        <div class="panel panel-default">
+          <div class="panel-heading">
+              <a data-toggle="collapse" href="#collapse8">Add medication for prescription</a>
+          </div>
+          <div id="collapse8" class="panel-collapse collapse">
+          <form class="form-horizontal">
+            <div class="form-group">
+              <label label class="control-label col-sm-2" for="medname">Medication:</label>
+              <div class="col-sm-10">
+                <select class="form-control" id="sel5" [(ngModel)]="intakeMedId" name="sel">
+                  <option *ngFor="let medication of medications" [(ngValue)]="medication.id">{{medication.name}}</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="control-label col-sm-2" for="des">Intake moments:</label>
+              <div class="col-sm-10">
+                <input type="text" class="form-control" id="des" placeholder="Enter description" name="des" [(ngModel)]="intakemed.intakeMoments">
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="col-sm-offset-2 col-sm-10">
+                <button type="submit" class="btn btn-primary" (click)="addIntake()">Submit</button>
+                <button type="reset" class="btn btn-primary" style="margin-left:15px">Reset</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// Initialize tooltip component
+$(function () {
+$('[data-toggle="tooltip"]').tooltip()
+})
+</script>
+
+</body>
+</html>
